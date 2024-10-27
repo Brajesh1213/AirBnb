@@ -13,7 +13,7 @@ export function UserContexProvidor({children}){
     const [ready,setReady] = useState(false);
     useEffect( ()=>{
         if(!user){
-          const {data}=  axios.get('/profile').then(({data})=>setUser(data));
+          const {data}=  axios.get('user/profile').then(({data})=>setUser(data));
             setUser(data);
             setReady(true);
         }

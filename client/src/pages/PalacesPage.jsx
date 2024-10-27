@@ -4,6 +4,8 @@ import Perks from "../Perks";
 import axios from 'axios';
 
 const PlacesPage = () => {
+  
+
   const { action } = useParams();
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
@@ -16,6 +18,7 @@ const PlacesPage = () => {
   const [checkout, setCheckout] = useState("");
   const [maxguest, setMaxguest] = useState(1);
 
+
   function inputDescription(text) {
     return <p className="text-gray-500 text-sm">{text}</p>;
   }
@@ -23,6 +26,7 @@ const PlacesPage = () => {
   function inputHeader(text) {
     return <h2 className="text-xl mt-4">{text}</h2>;
   }
+  
 
   function preInput(header, description) {
     return (
@@ -35,31 +39,45 @@ const PlacesPage = () => {
 
 
   async function addPhotoByLink(ev) {
-    ev.preventDefault(); 
-    const { data: filename } = await axios.post('/upload-by-link', { link: photolink });
+    ev.preventDefault();
+    const { data: filename } = await axios.post('/user/upload-by-link', { link: photolink });
+
     setAddphoto(prev => [...prev, filename]);
     setPhotolink('');
   }
 
-  function uploadPhoto(ev){
-    // ev.preventDefault();
-    const files=ev.target.files;
-    const data=new FormData();
-    data.set('photos',files);
-    // console.log(files);
-    axios.post('/upload',data,{
-      headers:{'Content-Type':'multipat/form-data'}
-    })
-    
 
+  function uploadPhoto(ev) {
+    const files = ev.target.files;
+    if (!files || files.length === 0) return;
+
+    const data = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      data.append('photos', files[i]);
+    }
+
+    axios.post('/user/uploads', data, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    .then(response => {
+      const { data: filenames } = response;
+      setAddphoto(prev => [...prev, ...filenames]);
+    })
+    .catch(error => {
+      console.error("Error uploading photos:", error);
+    });
   }
 
+  
   return (
     <div>
       {action !== "new" && (
+
         <div className="text-center">
           <Link
-            to={"/account/places/new"}
+            to={"new/"}
             className="inline-flex gap-1 bg-primary text-white py-2 px-4 rounded-full"
           >
             <svg
@@ -84,7 +102,6 @@ const PlacesPage = () => {
         <div>
           <form>
             {preInput("Title", "Enter a good title")}
-
             <input
               className="text-xl mt-4"
               value={title}
@@ -92,7 +109,6 @@ const PlacesPage = () => {
               type="text"
               placeholder="Title: My Apartment"
             />
-
             {preInput("Address", "i.e. Patna")}
             <input
               value={address}
@@ -101,7 +117,6 @@ const PlacesPage = () => {
               type="text"
               placeholder="Address or place"
             />
-
             {preInput("Photo", "More = Better")}
             <div className="flex gap-2">
               <input
@@ -114,21 +129,20 @@ const PlacesPage = () => {
                 Add&nbsp;Photo
               </button>
             </div>
-            <div className="mt-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {addphoto.length > 0 && addphoto.map((link, index) => (
-  <div key={index}>
-    <img 
-      src={`http://localhost:4080/uploads/${link}`} 
-      alt="Uploaded" 
-      className="w-full h-full object-cover p-2 rounded-2xl" 
-      onError={(e) => e.currentTarget.src = 'path/to/placeholder/image.jpg'} // Optional: Placeholder image on error
-    />
-  </div>
-))}
+            <div className="mt-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {addphoto.length > 0 && addphoto.map((link, index) => (
+                <div key={index} className="relative">
+                  <img 
+                    src={`http://localhost:4080/user/uploads/${link}`} 
+                    alt={`Uploaded ${index + 1}`} 
+                    className="w-full h-full object-cover p-2 rounded-2xl" 
+                    onError={(e) => e.currentTarget.src = 'path/to/placeholder/image.jpg'} 
+                  />
+                </div>
 
-              <label className=" cursor-pointer flex justify-center gap-1 border bg-transparent rounded-2xl p-8 text-xl text-gray-600">
-              <input type="file" className=" hidden" onChange={uploadPhoto}/>
-
+              ))}
+              <label className="cursor-pointer flex justify-center gap-1 border bg-transparent rounded-2xl p-8 text-xl text-gray-600">
+                <input type="file" multiple className="hidden" onChange={uploadPhoto} />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -143,26 +157,22 @@ const PlacesPage = () => {
                     d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"
                   />
                 </svg>
-                upload
+                Upload
               </label>
             </div>
-
             {preInput("Description", "Description about your place")}
             <textarea
               value={description}
               onChange={(ev) => setDescription(ev.target.value)}
               placeholder="Description about your place"
             />
-
             {preInput("Perks", "Select all the perks of your place")}
             <Perks selected={perks} onChange={setPerks} />
-
             {preInput("Extra Info", "House-rules, etc.")}
             <textarea
               value={extrainfo}
               onChange={(ev) => setExtrainfo(ev.target.value)}
             />
-
             {preInput("Check-in & Check-out", "Add check-in & check-out times")}
             <div className="grid gap-2 sm:grid-cols-3">
               <div>

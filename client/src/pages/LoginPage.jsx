@@ -12,7 +12,7 @@ const LoginPage = () => {
   const handleLoginSubmit = async (ev) => {
     ev.preventDefault();
     try {
-      const { data } = await axios.post('/login', { email, password });
+      const { data } = await axios.post('/user/login', { email, password });
       setUser(data); // Set user data from response
 
       alert('Login successful');
