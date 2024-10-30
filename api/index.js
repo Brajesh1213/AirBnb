@@ -12,9 +12,11 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:3000', // Your frontend URL
+    origin: 'http://localhost:5173', // Your frontend URL
     credentials: true // Allow credentials (cookies)
 }));
+app.use('/api/upload', express.static('upload'));
+
 
 app.use('/api/house_owner', userRoutes);
 

@@ -42,6 +42,6 @@ router.post('/uploads', (req, res, next) => {
   router.put('/places/:id',authenticateUser, updatePlace);  
   router.delete('/delete_place',authenticateUser,deletePlace);
 
-
+ 
 
 export default router;

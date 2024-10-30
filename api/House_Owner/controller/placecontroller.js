@@ -1,23 +1,26 @@
 // uploadController.js
-import imageDownloader from 'image-downloader';
+
 import path from 'path';
 import fs from 'fs';
 import Place from '../model/place.js'
+import { downloadPhoto } from '../utils/imagedownlaoder.js';
 
 
-// const Place = require('../model/place'); // Adjust the path as needed
 
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 export const uploadByLink = async (req, res) => {
   try {
     const { link } = req.body;
-    const newName = 'photo-' + Date.now() + '.jpg';
-    const dest = path.join(path.resolve(), 'uploads', newName);
+    console.log(link);
 
-    await imageDownloader.image({
-      url: link,
-      dest: dest,
-    });
+    const destPath = path.resolve(process.cwd(), 'upload'); // Corrects path to the 'uploads' folder
+    const newName = 'photo-' + Date.now() + '.jpg';
+    const dest = path.join(destPath, newName); // Ensure no duplication of folder structure
+
+    // Use your custom imageDownloader function
+    await downloadPhoto(link, destPath, newName);
 
     res.json({ fileName: newName });
   } catch (err) {
@@ -25,7 +28,6 @@ export const uploadByLink = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 
 
 
@@ -45,6 +47,7 @@ export const uploadPhotos = (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 export const createPlace = async (req, res) => {

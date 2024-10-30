@@ -11,7 +11,7 @@ const Register = () => {
   const registerUser = async (ev) => {
     ev.preventDefault();
     try {
-      await axios.post('/register', { name, email, password });
+      await axios.post('/api/house_owner/register', { name, email, password });
       alert('Registration successful! Now you can log in.');
       navigate('/login');
     } catch (error) {

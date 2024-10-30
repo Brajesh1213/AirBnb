@@ -9,7 +9,7 @@ import { UserContexProvidor } from './UserContex';
 import AccountPage from './pages/AccountPage';
 import PalacesPage from './pages/PalacesPage';
 
-axios.defaults.baseURL="http://localhost:4080"
+axios.defaults.baseURL="http://localhost:5000"
 axios.defaults.withCredentials= true;
 const App = () => {
   

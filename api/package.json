@@ -20,4 +20,5 @@
     "start": "nodemon index.js"
   },
   "type": "module"
+  
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Perks from "../Perks";
 import axios from 'axios';
@@ -9,7 +9,9 @@ const PlacesPage = () => {
   const { action } = useParams();
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
+
   const [addphoto, setAddphoto] = useState([]);
+ 
   const [description, setDescription] = useState("");
   const [photolink, setPhotolink] = useState("");
   const [perks, setPerks] = useState([]);
@@ -36,39 +38,51 @@ const PlacesPage = () => {
       </>
     );
   }
-
-
+ 
+  
   async function addPhotoByLink(ev) {
-    ev.preventDefault();
-    const { data: filename } = await axios.post('/user/upload-by-link', { link: photolink });
+    ev.preventDefault(); 
+    // console.log("hjv ")
+    const {data:filename}= await axios.post("api/house_owner/upload-by-link",{link:photolink});
+    setAddphoto(prev=>{
+      console.log(filename);
 
-    setAddphoto(prev => [...prev, filename]);
-    setPhotolink('');
+      
+      return[...prev, filename]
+    });
+   
+
+
   }
+   
+  
 
-
-  function uploadPhoto(ev) {
+  const  uploadPhoto=useCallback((ev)=> {
     const files = ev.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) return; 
 
     const data = new FormData();
+    // console.log(data.type);
+    
+    // console.log(files.length);
+    
     for (let i = 0; i < files.length; i++) {
       data.append('photos', files[i]);
     }
 
-    axios.post('/user/uploads', data, {
+    axios.post('/api/house_owner/uploads', data, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
     })
     .then(response => {
       const { data: filenames } = response;
-      setAddphoto(prev => [...prev, ...filenames]);
+      setAddphoto([...filenames]);
     })
     .catch(error => {
       console.error("Error uploading photos:", error);
     });
-  }
+  },[])
 
   
   return (
@@ -133,7 +147,7 @@ const PlacesPage = () => {
               {addphoto.length > 0 && addphoto.map((link, index) => (
                 <div key={index} className="relative">
                   <img 
-                    src={`http://localhost:4080/user/uploads/${link}`} 
+                    src={`http://localhost:5000/api/${link}`} 
                     alt={`Uploaded ${index + 1}`} 
                     className="w-full h-full object-cover p-2 rounded-2xl" 
                     onError={(e) => e.currentTarget.src = 'path/to/placeholder/image.jpg'} 

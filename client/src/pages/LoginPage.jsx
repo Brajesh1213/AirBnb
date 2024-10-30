@@ -12,8 +12,8 @@ const LoginPage = () => {
   const handleLoginSubmit = async (ev) => {
     ev.preventDefault();
     try {
-      const { data } = await axios.post('/user/login', { email, password });
-      setUser(data); // Set user data from response
+      const { data } = await axios.post('/api/house_owner/login', { email, password });
+      await setUser(data); // Set user data from response
 
       alert('Login successful');
       setRedirect(true);

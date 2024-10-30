@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import House_User from '../model/User.js';
 
 
+
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -59,13 +60,13 @@ export const logout = (req, res) => {
 export const profile = async (req, res) => {
   
     const { token } = req.cookies;
-  
+  // console.log(token)
     if (token) {
       try {
-        jwt.verify(token, jwtSecret, async (err, userData) => {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, userData) => {
           if (err) return res.status(401).json({ error: 'Invalid token' });
   
-          const user = await User.findById(userData.id);
+          const user = await House_User.findById(userData.id);
           if (!user) return res.status(404).json({ error: 'User not found' });
   
           const { name, email, _id } = user;
